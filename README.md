@@ -24,6 +24,13 @@ python evaluate.py --results results
 python evaluate_joint.py --runs results/joint_training --first-round results
 ```
 
+重新训练时，可在 `onball_participation/` 下合并随仓库发布的输入分片，两组命令分别还原主视图和延迟两秒视图。复算已有验证结果可跳过这一步。
+
+```bash
+cat results/view_parts/main.npz.part-* > results/main.npz
+cat results/view_parts/lag.npz.part-* > results/lag.npz
+```
+
 如需从原始记录重新建表，把 Wyscout 数据放入 `scene_regularity_release/data/raw/`，保持 `events/events_England.json`、`matches/matches_England.json` 和 `entities/{teams,players}.json` 的目录结构。运行以下命令后，再执行实验计划中的建表与输入扰动检验：
 
 ```bash
