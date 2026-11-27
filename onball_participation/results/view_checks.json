@@ -1,0 +1,11 @@
+{
+  "raw_perturbation_queries_across_views": 48,
+  "matches": [
+    2499719,
+    2499727,
+    2499981,
+    2499983
+  ],
+  "passed": true,
+  "exact_timestamp_substitution_and_card_boundaries": true
+}

@@ -1,0 +1,339 @@
+{
+  "scope": "England; reachable open-play targets; team and time given, start unknown",
+  "train_matches": 266,
+  "validation_matches": 57,
+  "validation_targets": 64975,
+  "profile_pseudocount": 50,
+  "tag_frequencies": {
+    "short_pass": {
+      "count": 37127,
+      "empty": 0,
+      "tag_counts": {
+        "301": 32,
+        "302": 57,
+        "1901": 554,
+        "2001": 56,
+        "1401": 1113,
+        "1001": 26,
+        "1801": 33785,
+        "1802": 3342
+      }
+    },
+    "long_pass": {
+      "count": 5411,
+      "empty": 0,
+      "tag_counts": {
+        "301": 7,
+        "302": 23,
+        "1901": 64,
+        "2001": 5,
+        "1401": 223,
+        "901": 441,
+        "1001": 13,
+        "1801": 2848,
+        "1802": 2563
+      }
+    },
+    "cross": {
+      "count": 1857,
+      "empty": 0,
+      "tag_counts": {
+        "301": 37,
+        "302": 136,
+        "1901": 55,
+        "401": 762,
+        "402": 1092,
+        "403": 3,
+        "2101": 327,
+        "801": 1018,
+        "1401": 7,
+        "1801": 574,
+        "1802": 1283
+      }
+    },
+    "through_ball": {
+      "count": 827,
+      "empty": 0,
+      "tag_counts": {
+        "301": 13,
+        "302": 38,
+        "1901": 75,
+        "2001": 2,
+        "1401": 6,
+        "901": 471,
+        "1801": 316,
+        "1802": 511
+      }
+    },
+    "head_pass": {
+      "count": 3455,
+      "empty": 0,
+      "tag_counts": {
+        "301": 5,
+        "302": 12,
+        "1901": 34,
+        "2001": 3,
+        "1401": 915,
+        "1801": 2150,
+        "1802": 1305
+      }
+    },
+    "carry": {
+      "count": 760,
+      "empty": 0,
+      "tag_counts": {
+        "1901": 141,
+        "1401": 51,
+        "1801": 705,
+        "1802": 55
+      }
+    },
+    "take_on": {
+      "count": 7305,
+      "empty": 0,
+      "tag_counts": {
+        "1901": 172,
+        "2001": 32,
+        "1401": 204,
+        "201": 3,
+        "501": 825,
+        "502": 807,
+        "503": 752,
+        "504": 619,
+        "1601": 5,
+        "602": 505,
+        "701": 1742,
+        "702": 2106,
+        "703": 3457,
+        "1801": 5563,
+        "1802": 1742
+      }
+    },
+    "shot": {
+      "count": 1219,
+      "empty": 0,
+      "tag_counts": {
+        "101": 142,
+        "301": 1,
+        "302": 1,
+        "1901": 60,
+        "401": 403,
+        "402": 623,
+        "403": 193,
+        "2101": 316,
+        "1401": 14,
+        "201": 859,
+        "1201": 128,
+        "1202": 63,
+        "1203": 86,
+        "1204": 37,
+        "1205": 61,
+        "1206": 33,
+        "1207": 28,
+        "1208": 7,
+        "1209": 13,
+        "1210": 85,
+        "1211": 11,
+        "1212": 87,
+        "1213": 26,
+        "1214": 62,
+        "1215": 71,
+        "1216": 89,
+        "1217": 2,
+        "1218": 2,
+        "1219": 2,
+        "1220": 1,
+        "1221": 3,
+        "1222": 4,
+        "1223": 2,
+        "1801": 456,
+        "1802": 763
+      }
+    },
+    "clearance": {
+      "count": 1782,
+      "empty": 2,
+      "tag_counts": {
+        "1901": 20,
+        "2001": 3,
+        "1401": 1021,
+        "1801": 345,
+        "1802": 1416
+      }
+    },
+    "touch": {
+      "count": 5232,
+      "empty": 2725,
+      "tag_counts": {
+        "102": 6,
+        "1901": 88,
+        "2001": 8,
+        "1401": 2008,
+        "201": 41,
+        "1301": 44,
+        "1302": 376
+      }
+    }
+  },
+  "families": {
+    "touch": {
+      "attribute": "interception mark",
+      "categories": {
+        "unmarked": {
+          "support": 3224,
+          "predicted_simple_pass": 2596,
+          "correct_parent_predictions": 74
+        },
+        "marked": {
+          "support": 2008,
+          "predicted_simple_pass": 816,
+          "correct_parent_predictions": 678
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.6328304552570633,
+        "personal_nll": 0.6288135589004152,
+        "nll_gain": 0.004016896356648126,
+        "paired_match_95pct_interval_for_gain": [
+          0.002492191711657318,
+          0.005784379548513966
+        ]
+      }
+    },
+    "long_pass": {
+      "attribute": "Wyscout subevent",
+      "categories": {
+        "High pass": {
+          "support": 3810,
+          "predicted_simple_pass": 3451,
+          "correct_parent_predictions": 161
+        },
+        "Launch": {
+          "support": 1601,
+          "predicted_simple_pass": 1018,
+          "correct_parent_predictions": 350
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.5257786390795104,
+        "personal_nll": 0.5235155567862364,
+        "nll_gain": 0.002263082293274081,
+        "paired_match_95pct_interval_for_gain": [
+          5.3972154351125025e-05,
+          0.004616744952098756
+        ]
+      }
+    },
+    "take_on": {
+      "attribute": "take-on side mark",
+      "categories": {
+        "unmarked": {
+          "support": 5934,
+          "predicted_simple_pass": 5127,
+          "correct_parent_predictions": 320
+        },
+        "left_marked": {
+          "support": 752,
+          "predicted_simple_pass": 666,
+          "correct_parent_predictions": 27
+        },
+        "right_marked": {
+          "support": 619,
+          "predicted_simple_pass": 547,
+          "correct_parent_predictions": 18
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.6105648238456464,
+        "personal_nll": 0.6087405885344453,
+        "nll_gain": 0.001824235311200875,
+        "paired_match_95pct_interval_for_gain": [
+          0.0008042253308552323,
+          0.002964440616651692
+        ]
+      }
+    },
+    "cross": {
+      "attribute": "body part",
+      "categories": {
+        "left_foot": {
+          "support": 762,
+          "predicted_simple_pass": 484,
+          "correct_parent_predictions": 204
+        },
+        "right_foot": {
+          "support": 1092,
+          "predicted_simple_pass": 755,
+          "correct_parent_predictions": 245
+        },
+        "head_or_body": {
+          "support": 3,
+          "predicted_simple_pass": 2,
+          "correct_parent_predictions": 0
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.5401323770472362,
+        "personal_nll": 0.5237485464059654,
+        "nll_gain": 0.01638383064127088,
+        "paired_match_95pct_interval_for_gain": [
+          0.012133099900590673,
+          0.021276899429017965
+        ]
+      }
+    },
+    "shot": {
+      "attribute": "body part",
+      "categories": {
+        "left_foot": {
+          "support": 403,
+          "predicted_simple_pass": 176,
+          "correct_parent_predictions": 180
+        },
+        "right_foot": {
+          "support": 623,
+          "predicted_simple_pass": 268,
+          "correct_parent_predictions": 271
+        },
+        "head_or_body": {
+          "support": 193,
+          "predicted_simple_pass": 14,
+          "correct_parent_predictions": 174
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.9872910855176522,
+        "personal_nll": 0.9647193758341722,
+        "nll_gain": 0.022571709683479907,
+        "paired_match_95pct_interval_for_gain": [
+          0.017496257276501153,
+          0.028086384810859875
+        ]
+      }
+    },
+    "short_pass": {
+      "attribute": "accuracy",
+      "categories": {
+        "accurate": {
+          "support": 33785,
+          "predicted_simple_pass": 32029,
+          "correct_parent_predictions": 32029
+        },
+        "inaccurate": {
+          "support": 3342,
+          "predicted_simple_pass": 2900,
+          "correct_parent_predictions": 2900
+        }
+      },
+      "conditional_tag_prediction": {
+        "role_only_nll": 0.29834181741739324,
+        "personal_nll": 0.29624887039071585,
+        "nll_gain": 0.002092947026677471,
+        "paired_match_95pct_interval_for_gain": [
+          0.0014023901792231325,
+          0.0028531319562037747
+        ]
+      }
+    }
+  }
+}
