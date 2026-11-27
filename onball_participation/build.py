@@ -15,6 +15,35 @@ from event_schema import ACTIONS, ACTION_OF, ON_BALL
 from model_inputs import VOCAB
 
 K = 32
+ACTION13_NAMES = tuple(
+    "simple_pass_forward" if action == "short_pass" else action for action in ACTIONS
+) + ("simple_pass_backward", "simple_pass_lateral", "simple_pass_stationary")
+
+
+def target_action13(starts, labels):
+    """Encode the target only. The nine non-Simple-pass actions retain their IDs."""
+    codes = pd.Index(ACTIONS).get_indexer(labels["action"])
+    if (codes < 0).any():
+        raise ValueError(f"Unknown target actions: {labels.loc[codes < 0, 'action'].unique()}")
+    simple = labels["action"].eq("short_pass").to_numpy()
+    start = starts.loc[simple, ["x", "y"]].to_numpy(dtype=np.float64)
+    end = labels.loc[simple, ["end_x", "end_y"]].to_numpy(dtype=np.float64)
+    valid = ((start >= 0) & (start <= 100) & (end >= 0) & (end <= 100)).all(axis=1)
+    if not valid.all():
+        bad_ids = starts.loc[simple, "event_id"].to_numpy()[~valid]
+        raise ValueError(f"Invalid Simple pass coordinates for event IDs {bad_ids[:5].tolist()}")
+    # Displacements in hundredths of a metre on a 105 x 68 m pitch.
+    u, v = ((end - start) * [105, 68]).T
+    codes[simple] = np.select(
+        [(u == 0) & (v == 0), u >= np.abs(v), -u >= np.abs(v)],
+        [
+            ACTION13_NAMES.index("simple_pass_stationary"),
+            ACTION13_NAMES.index("simple_pass_forward"),
+            ACTION13_NAMES.index("simple_pass_backward"),
+        ],
+        default=ACTION13_NAMES.index("simple_pass_lateral"),
+    )
+    return codes.astype(np.int8)
 
 
 def preceding(indices, times, limit):
@@ -150,6 +179,7 @@ def main():
     loc = read("targets_in")
     matches = read("matches").set_index("match_id")
     assert np.array_equal(m.event_id, loc.event_id)
+    action13 = target_action13(loc, y)
     roster = pd.read_parquet(args.data / "onpitch.parquet")
     subs = read("substitutions")
     prior = read("history")
@@ -249,7 +279,12 @@ def main():
             np.add.at(grouped, (g, h, z), 1)
     assert np.array_equal(blocks["event"], m.event_id)
     args.out.mkdir(parents=True, exist_ok=True)
-    np.savez(args.out / (args.view + ".npz"), **blocks)
+    np.savez(
+        args.out / (args.view + ".npz"),
+        **blocks,
+        action13=action13,
+        action13_names=ACTION13_NAMES,
+    )
     print(
         args.view,
         [

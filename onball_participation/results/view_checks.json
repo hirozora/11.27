@@ -7,5 +7,72 @@
     2499983
   ],
   "passed": true,
-  "exact_timestamp_substitution_and_card_boundaries": true
+  "exact_timestamp_substitution_and_card_boundaries": true,
+  "action13_raw_targets_checked_per_view": 368732,
+  "action13_reachable_counts": {
+    "main": {
+      "train": {
+        "simple_pass_forward": 49126,
+        "long_pass": 24586,
+        "cross": 8593,
+        "through_ball": 4196,
+        "head_pass": 14684,
+        "carry": 3336,
+        "take_on": 34435,
+        "shot": 5985,
+        "clearance": 8150,
+        "touch": 23532,
+        "simple_pass_backward": 31613,
+        "simple_pass_lateral": 94570,
+        "simple_pass_stationary": 113
+      },
+      "validation": {
+        "simple_pass_forward": 10429,
+        "long_pass": 5411,
+        "cross": 1857,
+        "through_ball": 827,
+        "head_pass": 3455,
+        "carry": 760,
+        "take_on": 7305,
+        "shot": 1219,
+        "clearance": 1782,
+        "touch": 5232,
+        "simple_pass_backward": 6792,
+        "simple_pass_lateral": 19888,
+        "simple_pass_stationary": 18
+      }
+    },
+    "lag": {
+      "train": {
+        "simple_pass_forward": 49122,
+        "long_pass": 24586,
+        "cross": 8584,
+        "through_ball": 4196,
+        "head_pass": 14684,
+        "carry": 3335,
+        "take_on": 34429,
+        "shot": 5983,
+        "clearance": 8150,
+        "touch": 23532,
+        "simple_pass_backward": 31606,
+        "simple_pass_lateral": 94562,
+        "simple_pass_stationary": 113
+      },
+      "validation": {
+        "simple_pass_forward": 10429,
+        "long_pass": 5411,
+        "cross": 1856,
+        "through_ball": 827,
+        "head_pass": 3455,
+        "carry": 760,
+        "take_on": 7302,
+        "shot": 1218,
+        "clearance": 1782,
+        "touch": 5232,
+        "simple_pass_backward": 6790,
+        "simple_pass_lateral": 19886,
+        "simple_pass_stationary": 18
+      }
+    }
+  }
 }

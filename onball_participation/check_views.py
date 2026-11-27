@@ -3,16 +3,17 @@
 import argparse
 import copy
 import json
+import math
 from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
-from build import inputs
+from build import ACTION13_NAMES, inputs, target_action13
 import build_model_data
 from build_actions import onpitch_intervals
 from model_inputs import VOCAB
-from event_schema import ON_BALL, PERIOD_ORDER
+from event_schema import ACTION_OF, ON_BALL, PERIOD_ORDER
 
 
 def stream(raw, mid):
@@ -20,6 +21,46 @@ def stream(raw, mid):
         return build_model_data.event_stream(
             {}, dict(raw_dir="data/raw", league="England", position_overrides=[]), {mid}
         )
+
+
+def check_pass_boundaries():
+    # The two 34 by 52.5 displacements are exactly diagonal in metres.
+    cases = [
+        (0, 0, 0, 0, "stationary"),
+        (50, 50, 51, 50, "forward"),
+        (50, 50, 50, 49, "lateral"),
+        (0, 0, 3, 4, "forward"),
+        (0, 0, 2, 4, "lateral"),
+        (0, 0, 34, 52.5, "forward"),
+        (34, 52.5, 0, 0, "backward"),
+    ]
+    frame = pd.DataFrame(cases, columns=["x", "y", "end_x", "end_y", "expected"])
+    frame["event_id"] = frame.index
+    frame["action"] = "short_pass"
+    actual = np.asarray(ACTION13_NAMES)[target_action13(frame, frame)]
+    np.testing.assert_array_equal(actual, "simple_pass_" + frame.expected)
+    frame.loc[0, "end_y"] = np.nan
+    with np.testing.assert_raises_regex(ValueError, "Invalid Simple pass coordinates"):
+        target_action13(frame, frame)
+    frame.loc[0, "action"] = "long_pass"
+    assert ACTION13_NAMES[target_action13(frame, frame)[0]] == "long_pass"
+
+
+def raw_action_name(event):
+    action = ACTION_OF[event["eventName"], event["subEventName"]]
+    if action != "short_pass":
+        return action
+    start, end = event["positions"]
+    if start == end:
+        return "simple_pass_stationary"
+    dx = 105 * (end["x"] - start["x"])
+    dy = 68 * (end["y"] - start["y"])
+    angle = math.degrees(math.atan2(abs(dy), dx))
+    if angle <= 45:
+        return "simple_pass_forward"
+    if angle >= 135:
+        return "simple_pass_backward"
+    return "simple_pass_lateral"
 
 
 def check_boundaries():
@@ -78,6 +119,7 @@ def main():
         p.add_argument("--" + arg, required=True, type=Path)
     a = p.parse_args()
     check_boundaries()
+    check_pass_boundaries()
     m = pd.read_parquet(a.data / "model/targets_meta.parquet")
     original = pd.read_parquet(a.data / "onpitch.parquet")
     s = pd.read_parquet(a.data / "model/substitutions.parquet")
@@ -86,9 +128,16 @@ def main():
         int(mid) for _, g in usable.groupby("block") for mid in g.match_id.unique()[:2]
     ]
     raw = {mid: [] for mid in mids}
+    assert m.event_id.is_unique
+    row_for_event = dict(zip(m.event_id, range(len(m))))
+    raw_labels = np.full(len(m), -1, dtype=np.int8)
     for e in json.loads((a.raw / "events/events_England.json").read_text()):
+        row = row_for_event.get(e["id"])
+        if row is not None:
+            raw_labels[row] = ACTION13_NAMES.index(raw_action_name(e))
         if e["matchId"] in raw:
             raw[e["matchId"]].append(e)
+    assert (raw_labels >= 0).all()
     matches = {
         g["wyId"]: g
         for g in json.loads((a.raw / "matches/matches_England.json").read_text())
@@ -105,8 +154,17 @@ def main():
             probe_indices.extend(qs.index[[0, len(qs) // 2, len(qs) - 1]].tolist())
     row_of = {ix: j for j, ix in enumerate(probe_indices)}
     saved = {}
+    action_counts = {}
     for lag, view in ((False, "main"), (True, "lag")):
         with np.load(a.results / (view + ".npz")) as f:
+            np.testing.assert_array_equal(f["event"], m.event_id)
+            np.testing.assert_array_equal(f["action13_names"], ACTION13_NAMES)
+            np.testing.assert_array_equal(f["action13"], raw_labels)
+            reachable, val = f["slot"] >= 0, f["val"]
+            action_counts[view] = {}
+            for split, selected in (("train", ~val), ("validation", val)):
+                counts = np.bincount(raw_labels[reachable & selected], minlength=len(ACTION13_NAMES))
+                action_counts[view][split] = dict(zip(ACTION13_NAMES, counts.tolist()))
             saved[lag] = {
                 k: f[k][probe_indices]
                 for k in ("token", "wzone", "age", "context", "player", "hist")
@@ -180,6 +238,8 @@ def main():
         "matches": mids,
         "passed": True,
         "exact_timestamp_substitution_and_card_boundaries": True,
+        "action13_raw_targets_checked_per_view": len(raw_labels),
+        "action13_reachable_counts": action_counts,
     }
     (a.results / "view_checks.json").write_text(json.dumps(report, indent=2) + "\n")
     print(report)

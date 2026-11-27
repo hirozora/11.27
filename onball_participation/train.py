@@ -19,7 +19,7 @@ from train_seq import deterministic, rotate_orders, lr_at
 from model_inputs import VOCAB
 
 
-class Actor(nn.Module):
+class SequenceEncoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.event = nn.Embedding(
@@ -34,11 +34,8 @@ class Actor(nn.Module):
             nn.Linear(128, 64),
             nn.GELU(),
         )
-        self.scorer = nn.Sequential(
-            nn.Linear(64 + 22 + 8, 64), nn.GELU(), nn.Dropout(0.1), nn.Linear(64, 1)
-        )
 
-    def candidate_hidden(self, d, i, role):
+    def encode_context(self, d, i):
         tok = d["token"][i].long()
         x = torch.cat(
             [
@@ -48,9 +45,20 @@ class Actor(nn.Module):
             ],
             -1,
         )
-        c = self.sequence(
+        return self.sequence(
             torch.cat([(x * (tok > 0)[:, :, None]).flatten(1), d["context"][i]], 1)
         )
+
+
+class Actor(SequenceEncoder):
+    def __init__(self):
+        super().__init__()
+        self.scorer = nn.Sequential(
+            nn.Linear(64 + 22 + 8, 64), nn.GELU(), nn.Dropout(0.1), nn.Linear(64, 1)
+        )
+
+    def candidate_hidden(self, d, i, role):
+        c = self.encode_context(d, i)
         state = torch.cat(
             [c[:, None].expand(-1, 11, -1), d["hist"][i].float(), role], -1
         )

@@ -7,6 +7,7 @@
 - [研究概要](onball_participation/RESEARCH_OVERVIEW.md)与[实验计划](onball_participation/EXPERIMENT_PLAN.md)说明候选名单、历史可见性、比赛切分和评估方法。
 - [个人区域历史的四组对照](onball_participation/results/RESULTS.md)显示，本场个人历史贡献了联合预测改善的大部分。
 - [位置监督与执行者联合训练](onball_participation/results/joint_training/RESULTS.md)在主视图将执行者 Top-1 从 31.70% 提高到 32.21%。[训练协议](onball_participation/JOINT_PROTOCOL.md)描述共享表示、梯度对照和三种子的复算方法。
+- 第三轮把普通传球细分为前向、后向、横传和原地。主视图上，以个人动作倾向替换位置组倾向，十三类事件 NLL 从 1.8044 降至 1.7981，约 85% 的改善来自区分动作大类。两种视图共训练 30 组模型，报告包含方向召回率、事件混淆及组内交换对照。[十三类事件结果](onball_participation/results/event13/RESULTS.md) · [实验协议](onball_participation/EVENT_PROTOCOL.md)
 
 ## 历史结果
 
@@ -16,22 +17,18 @@
 
 ## 使用方法
 
-在仓库根目录安装 `scene_regularity_release/requirements.txt` 的依赖和与运行环境匹配的 PyTorch 2.6。当前研究目录为 `onball_participation/`。两轮协议中的训练命令以该目录为工作目录。使用保留的验证预测可直接重算表格：
+在仓库根目录安装 `scene_regularity_release/requirements.txt` 的依赖和与运行环境匹配的 PyTorch 2.6。进入研究目录后先合并主视图和两秒延迟视图的输入分片，再使用归档的验证预测复算三轮实验。分片包含逐动作十三类标签，第三轮的输入目录另附比赛日期与验证动作子类。
 
 ```bash
 cd onball_participation
-python evaluate.py --results results
-python evaluate_joint.py --runs results/joint_training --first-round results
-```
-
-重新训练时，可在 `onball_participation/` 下合并随仓库发布的输入分片，两组命令分别还原主视图和延迟两秒视图。复算已有验证结果可跳过这一步。
-
-```bash
 cat results/view_parts/main.npz.part-* > results/main.npz
 cat results/view_parts/lag.npz.part-* > results/lag.npz
+python evaluate.py --results results
+python evaluate_joint.py --runs results/joint_training --first-round results
+python evaluate_events.py --data results --runs results/event13 --events results/event13/inputs/events_in.parquet
 ```
 
-如需从原始记录重新建表，把 Wyscout 数据放入 `scene_regularity_release/data/raw/`，保持 `events/events_England.json`、`matches/matches_England.json` 和 `entities/{teams,players}.json` 的目录结构。运行以下命令后，再执行实验计划中的建表与输入扰动检验：
+如需从原始记录重新建表，把 Wyscout 数据放入 `scene_regularity_release/data/raw/`，保持 `events/events_England.json`、`matches/matches_England.json` 和 `entities/{teams,players}.json` 的目录结构。从仓库根目录执行以下命令，再按实验计划建表并检验输入扰动。
 
 ```bash
 cd scene_regularity_release
